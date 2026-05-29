@@ -1,0 +1,54 @@
+pipeline:
+  name: mlops-training-pipeline
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  timeout: 3600
+
+data:
+  source_uri: "s3://ml-data/training/latest.parquet"
+  validation:
+    min_rows: 1000
+    max_null_percentage: 5
+
+features:
+  create_interactions: true
+  create_aggregations: true
+  scaling: standard
+  encoding: label
+
+model:
+  type: xgboost
+  hyperparameters:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    colsample_bytree: 0.8
+  cross_validation:
+    n_splits: 5
+    scoring: f1_weighted
+
+deployment:
+  strategy: canary
+  canary_percentage: 20
+  promotion_criteria:
+    min_accuracy: 0.90
+    max_latency_p99_ms: 200
+    min_requests: 1000
+  rollback:
+    error_rate_threshold: 0.05
+    latency_threshold_ms: 500
+
+monitoring:
+  drift_detection:
+    enabled: true
+    method: ks_test
+    threshold: 0.05
+    check_interval: "1h"
+  alerts:
+    slack_webhook: "${SLACK_WEBHOOK_URL}"
+    pagerduty_key: "${PAGERDUTY_KEY}"
+
+mlflow:
+  tracking_uri: "http://mlflow:5000"
+  experiment_name: "mlops-pipeline"
+  registry_uri: "http://mlflow:5000"

@@ -1,0 +1,47 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# MLflow artifacts
+mlruns/
+mlartifacts/
+
+# Data
+data/
+*.parquet
+*.csv
+!tests/fixtures/*.csv
+
+# Models
+models/
+*.pkl
+*.joblib
+*.h5
+
+# Environment
+.env
+.env.local
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
+
+# OS
+.DS_Store
+Thumbs.db
